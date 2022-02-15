@@ -38,6 +38,17 @@ public class MyJobController {
     private final JobLauncher jobLauncher;
     private final Job job;
     
+    @GetMapping("/chargerMsg")
+    public BatchStatus charger() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+        Map<String, JobParameter> params = new HashMap<>();
+        params.put("time", new JobParameter(System.currentTimeMillis()));
+        JobParameters jobParameters = new JobParameters(params);
+        JobExecution jobExecution = jobLauncher.run(job, jobParameters);
+        while(jobExecution.isRunning()){
+            log.info("Running ..........");
+        }
+        return jobExecution.getStatus();
+    }
 
     @GetMapping("/test")
     public ResponseEntity<String> testBi() {
@@ -55,15 +66,5 @@ public class MyJobController {
         return ResponseEntity.ok(list.toString());
     }
 
-    @GetMapping("/chargerMsg")
-    public BatchStatus charger() throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
-        Map<String, JobParameter> params = new HashMap<>();
-        params.put("time", new JobParameter(System.currentTimeMillis()));
-        JobParameters jobParameters = new JobParameters(params);
-        JobExecution jobExecution = jobLauncher.run(job, jobParameters);
-        while(jobExecution.isRunning()){
-            log.info("Running ..........");
-        }
-        return jobExecution.getStatus();
-    }
+    
 }

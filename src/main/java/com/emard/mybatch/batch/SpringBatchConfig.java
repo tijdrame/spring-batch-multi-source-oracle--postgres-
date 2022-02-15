@@ -1,6 +1,7 @@
 package com.emard.mybatch.batch;
 
 
+import com.emard.mybatch.batch.listener.JobCompletionNotificationListener;
 import com.emard.mybatch.model.SysTrack;
 import com.emard.mybatch.modelOracle.OracleSysTrack;
 
@@ -35,16 +36,18 @@ public class SpringBatchConfig {
 
     @Bean
     @Transactional
-    public Job bankJobb(){
+    public Job bankJobb(JobCompletionNotificationListener listener){
         Step step1 = stepBuilderFactory.get("step-load-data")
-        .<OracleSysTrack, SysTrack> chunk(100)
+        .<OracleSysTrack, SysTrack> chunk(10)
         .reader(bankTransactionReader)
         .processor(bankTransactionProcessor) //avt 1 seul processor
         //.processor(compositeItemProcessor()) // plusieur processor
         .writer(bankTransactionWriter)
         .transactionManager(sysTrackTransactionManager)
         .build();
+
         return jobBuilderFactory.get("bank-data-loader-job")
+        .listener(listener)
         .start(step1)
         .build();
     }
