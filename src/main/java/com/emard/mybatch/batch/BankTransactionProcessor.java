@@ -11,6 +11,7 @@ public class BankTransactionProcessor implements ItemProcessor <OracleSysTrack, 
 
     @Override
     public SysTrack process(OracleSysTrack item) throws Exception {
+        //if(item.getMessage()==null)return null;
         SysTrack sysTrack = new SysTrack();
         sysTrack.setMessage(item.getMessage());
         sysTrack.setProgramme(item.getProgramme());
